@@ -121,19 +121,19 @@ public class RecipeManualServiceImpl implements RecipeManualService {
         // OpenAI API 호출로부터 Flux<String>을 반환
         return Flux.defer(() -> {
             try {
-                String[] recommendationHolder = {""};
+                String recommendationHolder = "";
 
                 // OpenAI API 호출
                 return openAIService.getRecommendManuals(recipePrompt)
                         .doOnNext(recommendation -> {
                             // 추천 매뉴얼을 받아오는 중의 로깅
                             log.info("Received recommendation: {}", recommendation);
-                            recommendationHolder[0] += recommendation; // recommendation 저장
+                            recommendationHolder += recommendation; // recommendation 저장
                         })
                         .doOnComplete(() -> {
                             // 완료되었을 때 registRecipeManual 호출
-                            if (recommendationHolder[0] != null) {
-                                registRecipeManual(recipeId, recommendationHolder[0]); // recommendation을 전달
+                            if (recommendationHolder != null) {
+                                registRecipeManual(recipeId, recommendationHolder); // recommendation을 전달
                             } else {
                                 log.warn("No recommendation received.");
                             }
